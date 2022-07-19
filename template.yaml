@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  HomeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda/home/
+      Handler: home
+      Runtime: go1.x
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+  AboutFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda/about/
+      Handler: about
+      Runtime: go1.x
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /about
+            Method: get

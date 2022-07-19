@@ -1,0 +1,52 @@
+version: "3"
+
+tasks:
+  start:
+    cmds:
+      - sam build
+      - sam local start-api --warm-containers EAGER
+    silent: true
+
+  add:
+    cmds:
+      - mkdir ./lambda/{{.CLI_ARGS}}
+      # - touch ./lambda/{{.CLI_ARGS}}/main.go
+      # - go mod init {{.CLI_ARGS}}
+      # - mv go.mod ./lambda/{{.CLI_ARGS}}/
+      - task create -- {{.CLI_ARGS}}
+
+  create:
+    dir: ./lambda/{{.CLI_ARGS}}
+    cmds:
+      - go mod init {{.CLI_ARGS}}
+      - go get github.com/aws/aws-lambda-go
+      - 'echo -e "package main
+
+        import (
+        \"encoding/json\"\n
+        \"log\"\n
+        \"github.com/aws/aws-lambda-go/events\"\n
+        \"github.com/aws/aws-lambda-go/lambda\"\n
+        )
+
+        type body struct {
+        Message string `json:\"message\"`
+        }
+
+        // Handler is the Lambda function handler\n
+        func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+        log.Println(\"Lambda request\", request.RequestContext.RequestID)
+
+        b, _ := json.Marshal(body{Message: \"{{.CLI_ARGS}}\"})
+
+        return events.APIGatewayProxyResponse{
+        Body:       string(b),
+        StatusCode: 200,
+        }, nil
+        }
+
+        func main() {
+        lambda.Start(Handler)
+        }
+        " >> ./main.go'
+      - go fmt
