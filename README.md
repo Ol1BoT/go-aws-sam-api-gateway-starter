@@ -2,7 +2,7 @@
 
 ## Prerequisits
 
-- Install task from https://task.dev
+- Install task from https://taskfile.dev/
 - Install Docker
 - Install AWS CLI
 - Install SAM CLI
